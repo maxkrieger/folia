@@ -40,15 +40,18 @@ export const deleteByID = (id: string, card: C): C | undefined =>
     ? { ...card, child: deleteByID(id, card.child) }
     : card;
 
+const shiftLeafX = (leaf: C, x: number, dx: number, y: number): C => ({
+  ...leaf,
+  hasParent: true,
+  coords: { y, x: x + dx },
+  child: leaf.child ? shiftLeafX(leaf.child, x + dx, dx, y) : undefined
+});
+
 export const insertLeaf = (card: C, leaf: C): C =>
   card.child === undefined
     ? {
         ...card,
-        child: {
-          ...leaf,
-          hasParent: true,
-          coords: { x: card.coords.x + CARD_WIDTH + 10, y: card.coords.y }
-        }
+        child: shiftLeafX(leaf, card.coords.x, CARD_WIDTH + 10, card.coords.y)
       }
     : { ...card, child: insertLeaf(card.child, leaf) };
 
