@@ -2,7 +2,7 @@
 
 Deck of many.
 
-![You're nothing but a pack of cards! - Alice](alice.jpg)
+<img alt="You're nothing but a pack of cards! - Alice" src="alice.jpg" width="350" />
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
