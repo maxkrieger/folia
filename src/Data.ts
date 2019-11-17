@@ -1,3 +1,5 @@
+import { CARD_WIDTH } from "./Card";
+
 export interface ICoords {
   x: number;
   y: number;
@@ -5,6 +7,7 @@ export interface ICoords {
 export interface C {
   name: string;
   instanceid: string;
+  color: string;
   child?: C;
   hasParent: boolean;
   coords: ICoords;
@@ -44,13 +47,15 @@ export const insertLeaf = (card: C, leaf: C): C =>
         child: {
           ...leaf,
           hasParent: true,
-          coords: { x: card.coords.x + 165 / 2 + 10, y: card.coords.y }
+          coords: { x: card.coords.x + CARD_WIDTH + 10, y: card.coords.y }
         }
       }
     : { ...card, child: insertLeaf(card.child, leaf) };
 
 export const putIn = (cards: C[], sourceID: string, childID: string): C[] => {
-  const leaf = cards.find((c: C) => findByID(childID, c) !== undefined);
+  const leaf = cards
+    .map((c: C) => findByID(childID, c))
+    .find((c: C | undefined) => c !== undefined);
   if (leaf === undefined) {
     console.error(`ASSERT: cannot find child by ID ${childID}`);
     return cards;
@@ -67,3 +72,42 @@ export const putIn = (cards: C[], sourceID: string, childID: string): C[] => {
     }
   );
 };
+
+export const isUnrelated = (cards: C[], id1: string, id2: string): boolean => {
+  const head1 = cards
+    .map((c: C) => findByID(id1, c))
+    .find((c: C | undefined) => c !== undefined);
+  const head2 = cards
+    .map((c: C) => findByID(id2, c))
+    .find((c: C | undefined) => c !== undefined);
+
+  if (head1 === undefined || head2 === undefined) {
+    console.log(`Cannot find ${id1} ${head1} ${id2} ${head2}`);
+    return false;
+  }
+
+  return (
+    findByID(id1, head2) === undefined && findByID(id2, head1) === undefined
+  );
+};
+
+export const lift = (cards: C[], id: string): C[] => {
+  const leaf = cards
+    .map((c: C) => findByID(id, c))
+    .find((c: C | undefined) => c !== undefined);
+
+  if (leaf === undefined) {
+    console.error(`ASSERT: cannot find ID ${id}`);
+    return cards;
+  }
+  if (!leaf.hasParent) {
+    return cards;
+  }
+  const removed = cards
+    .map((card: C) => deleteByID(id, card))
+    .filter((card: C | undefined) => card !== undefined) as C[];
+  return [...removed, { ...leaf, hasParent: false }];
+};
+
+export const depth = (card: C): number =>
+  card.child ? depth(card.child) + 1 : 1;

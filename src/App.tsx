@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import Card from "./Card";
-import { C, ICoords, setCoords, putIn } from "./Data";
+import { C, ICoords, setCoords, putIn, lift, isUnrelated } from "./Data";
 import uniqid from "uniqid";
 
 const tmp = () => ({
   name: "",
   instanceid: uniqid("card-"),
+  color: "#" + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
   hasParent: false,
   coords: {
     x: 0,
@@ -22,10 +23,10 @@ const setAllCoords = (dy: number, dx: number, id: string, cards: C[]) =>
 
 const App: React.FC = () => {
   const [state, setState] = useState<IState>({
-    cards: [{ ...tmp() }, tmp()]
+    cards: [tmp(), tmp(), tmp()]
   });
   return (
-    <div style={{}}>
+    <div style={{ width: "100%", height: "100%" }}>
       {state.cards.map((card: C) => (
         <Card
           key={card.instanceid}
@@ -36,13 +37,19 @@ const App: React.FC = () => {
               cards: putIn(prevState.cards, parentID, childID)
             }))
           }
-          onSetCoords={(dy, dx, id) =>
-            // TODO: remove card from parent
+          onLift={(id: string) =>
+            setState(prevState => ({
+              ...prevState,
+              cards: lift(prevState.cards, id)
+            }))
+          }
+          onSetCoords={(dy, dx, id) => {
             setState(prevState => ({
               ...prevState,
               cards: setAllCoords(dy, dx, id, prevState.cards)
-            }))
-          }
+            }));
+          }}
+          isUnrelated={(id1, id2) => isUnrelated(state.cards, id1, id2)}
         />
       ))}
     </div>
