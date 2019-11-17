@@ -1,3 +1,9 @@
+# Folia
+
+Deck of many.
+
+![You're nothing but a pack of cards! - Alice](alice.jpg)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

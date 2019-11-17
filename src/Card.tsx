@@ -38,7 +38,6 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
     mousedown,
     isUnrelated
   } = props;
-  const [md, setMousedown] = React.useState(false);
 
   const c = (
     <div
@@ -68,8 +67,6 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
         touchAction: "none",
         zIndex: mousedown ? 1000 : "initial"
       }}
-      onMouseDown={() => setMousedown(true)}
-      onMouseUp={() => setMousedown(false)}
       data-card-id={cardData.instanceid}
       ref={getRef}
     >
