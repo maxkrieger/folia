@@ -126,11 +126,10 @@ const Card: React.FC<ICardProps> = ({
   const isHead = cardData.child !== undefined && !cardData.hasParent;
 
   const c = (
-    // TODO: inertia?
-
     <Reactable
       draggable={
         {
+          inertia: true,
           onend: () => onLift(cardData.instanceid),
           onmove: ({ dy, dx }: any) => onSetCoords(dy, dx, cardData.instanceid),
           modifiers: [
