@@ -1,7 +1,7 @@
 import * as React from "react";
 import reactable from "reactablejs";
 import Duck from "./Duck";
-import { C, ICoords, depth } from "./Data";
+import { C, ICoords, depth, shiftLeafX } from "./Data";
 import interact from "interactjs";
 
 export const CARD_WIDTH = 165 / 2;
@@ -15,6 +15,7 @@ interface ISCProps {
   angle: number;
   dropping: boolean;
   cardData: C;
+  mousedown: boolean;
   onSetCoords(dy: number, dx: number, id: string): void;
   ond(parent: string, child: string): void;
   onLift(id: string): void;
@@ -32,9 +33,10 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
     onSetCoords,
     ond,
     onLift,
+    mousedown,
     isUnrelated
   } = props;
-  const [mousedown, setMousedown] = React.useState(false);
+  const [md, setMousedown] = React.useState(false);
 
   const c = (
     <div
@@ -77,7 +79,16 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
   }
   const child = (
     <Card
-      cardData={cardData.child}
+      cardData={
+        mousedown
+          ? shiftLeafX(
+              cardData.child,
+              cardData.coords.x + CARD_WIDTH / 5,
+              CARD_WIDTH / 5,
+              cardData.coords.y
+            )
+          : cardData.child
+      }
       onSetCoords={onSetCoords}
       onDrop={ond}
       onLift={onLift}
@@ -111,6 +122,7 @@ const Card: React.FC<ICardProps> = ({
 }: ICardProps) => {
   const [dropping, setDropping] = React.useState(false);
 
+  const [mousedown, setMousedown] = React.useState(false);
   const isHead = cardData.child !== undefined && !cardData.hasParent;
 
   const c = (
@@ -139,14 +151,6 @@ const Card: React.FC<ICardProps> = ({
             );
           } else return false;
         },
-        // checker: (dev, ev, dro, dz, dropElement, dr, draggableElement) => {
-        //   console.log(
-        //     cardData.instanceid,
-        //     dropElement.dataset.cardId,
-        //     draggableElement.dataset.cardId
-        //   );
-        //   return true;
-        // },
         ondragenter: () => setDropping(true),
         ondragleave: () => setDropping(false),
         ondrop: ({ relatedTarget }) => {
@@ -156,6 +160,13 @@ const Card: React.FC<ICardProps> = ({
         overlap: 0.1
       }}
       dropping={dropping}
+      onDown={() => {
+        setMousedown(true);
+      }}
+      onUp={() => {
+        setMousedown(false);
+      }}
+      mousedown={mousedown}
       cardData={cardData}
       onSetCoords={onSetCoords}
       onLift={onLift}
@@ -164,25 +175,23 @@ const Card: React.FC<ICardProps> = ({
       {...cardData.coords}
     />
   );
-  if (isHead) {
-    return (
-      <>
-        <div
-          style={{
-            position: "absolute",
-            width: depth(cardData) * (CARD_WIDTH + 10) + 10,
-            height: CARD_HEIGHT + 20,
-            left: cardData.coords.x - 10,
-            top: cardData.coords.y - 10,
-            backgroundColor: "tan",
-            borderRadius: "10px"
-          }}
-        />
-        {c}
-      </>
-    );
-  }
-  return c;
+  return (
+    <>
+      <div
+        style={{
+          display: isHead && !mousedown ? "initial" : "none",
+          position: "absolute",
+          width: depth(cardData) * (CARD_WIDTH + 10) + 10,
+          height: CARD_HEIGHT + 20,
+          left: cardData.coords.x - 10,
+          top: cardData.coords.y - 10,
+          backgroundColor: "tan",
+          borderRadius: "10px"
+        }}
+      />
+      {c}
+    </>
+  );
 };
 
 export default Card;
