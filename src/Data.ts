@@ -1,4 +1,4 @@
-import { CARD_WIDTH } from "./Card";
+import { CARD_WIDTH, GUTTER_SIZE } from "./Card";
 
 export interface ICoords {
   x: number;
@@ -53,8 +53,8 @@ export const insertLeaf = (card: C, leaf: C): C =>
         ...card,
         child: shiftLeafX(
           leaf,
-          card.coords.x + CARD_WIDTH + 10,
-          CARD_WIDTH + 10,
+          card.coords.x + CARD_WIDTH + GUTTER_SIZE,
+          CARD_WIDTH + GUTTER_SIZE,
           card.coords.y
         )
       }

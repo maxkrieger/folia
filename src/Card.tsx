@@ -8,6 +8,8 @@ export const CARD_WIDTH = 165 / 2;
 
 export const CARD_HEIGHT = 230 / 2;
 
+export const GUTTER_SIZE = 10;
+
 interface ISCProps {
   getRef: any;
   x: number;
@@ -180,10 +182,10 @@ const Card: React.FC<ICardProps> = ({
         style={{
           display: isHead && !mousedown ? "initial" : "none",
           position: "absolute",
-          width: depth(cardData) * (CARD_WIDTH + 10) + 10,
+          width: depth(cardData) * (CARD_WIDTH + GUTTER_SIZE) + GUTTER_SIZE,
           height: CARD_HEIGHT + 20,
-          left: cardData.coords.x - 10,
-          top: cardData.coords.y - 10,
+          left: cardData.coords.x - GUTTER_SIZE,
+          top: cardData.coords.y - GUTTER_SIZE,
           backgroundColor: "tan",
           borderRadius: "10px"
         }}
