@@ -40,6 +40,20 @@ export const deleteByID = (id: string, card: C): C | undefined =>
     ? { ...card, child: deleteByID(id, card.child) }
     : card;
 
+export const dropDelete = (id: string, cards: C[]): [C, C[]] => {
+  const found = cards
+    .map((card: C) => findByID(id, card))
+    .find((c: C | undefined) => c !== undefined);
+  if (found === undefined) {
+    console.error(`Cannot find card ${id}`);
+    return [cards[0], cards];
+  }
+  const deleted = cards
+    .map((card: C) => deleteByID(id, card))
+    .filter((c: C | undefined) => c !== undefined);
+  return [found, deleted as C[]];
+};
+
 export const shiftLeafX = (leaf: C, x: number, dx: number, y: number): C => ({
   ...leaf,
   hasParent: true,

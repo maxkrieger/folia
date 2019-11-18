@@ -1,17 +1,23 @@
 import React, { useState } from "react";
 import Card from "./Card";
-import { C, ICoords, setCoords, putIn, lift, isUnrelated } from "./Data";
+import {
+  C,
+  ICoords,
+  setCoords,
+  putIn,
+  lift,
+  isUnrelated,
+  dropDelete
+} from "./Data";
 import uniqid from "uniqid";
+import Canvas from "./Canvas";
 
-const tmp = () => ({
+const tmp = (x: number, y: number) => ({
   name: "",
   instanceid: uniqid("card-"),
   color: "#" + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
   hasParent: false,
-  coords: {
-    x: 0,
-    y: 0
-  }
+  coords: { x, y }
 });
 
 interface IState {
@@ -23,10 +29,20 @@ const setAllCoords = (dy: number, dx: number, id: string, cards: C[]) =>
 
 const App: React.FC = () => {
   const [state, setState] = useState<IState>({
-    cards: [tmp(), tmp(), tmp()]
+    cards: [tmp(500, 500), tmp(550, 500), tmp(600, 500)]
   });
   return (
     <div style={{ width: "100%", height: "100%" }}>
+      <Canvas
+        dropped={(id: string) => {
+          const [found, deleted] = dropDelete(id, state.cards);
+          setState(prevState => ({
+            ...prevState,
+            cards: deleted
+          }));
+          return found;
+        }}
+      />
       {state.cards.map((card: C) => (
         <Card
           key={card.instanceid}

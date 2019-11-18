@@ -8,6 +8,8 @@
     "@types/react": "16.9.11",
     "@types/react-dom": "16.9.4",
     "interactjs": "^1.7.0",
+    "matter-js": "^0.14.2",
+    "p5": "^0.10.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-scripts": "3.2.0",
@@ -37,6 +39,8 @@
     ]
   },
   "devDependencies": {
+    "@types/matter-js": "^0.10.4",
+    "@types/p5": "^0.9.0",
     "@types/uniqid": "^4.1.3"
   }
 }
