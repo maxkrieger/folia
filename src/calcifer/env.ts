@@ -2,6 +2,7 @@ import * as p5 from "p5";
 import Matter from "matter-js";
 import Thing from "./ThingCard";
 import { C } from "../Data";
+import Ball from "./Ball";
 // import Attribute from "./AttributeCard";
 // import Ball from "./things/Ball";
 // import Big from "./things/Big";
@@ -32,6 +33,9 @@ export default class Env {
   };
   public onDrop = (card: C) => {
     console.log("peekaboo!", card);
+    this.addThing(
+      new Ball(this.p, this.engine.world, card.coords.x, card.coords.y)
+    );
   };
   public addThing = (thing: Thing) => {
     thing.getEffect((name, payload) => {
