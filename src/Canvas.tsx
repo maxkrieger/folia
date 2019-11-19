@@ -4,16 +4,22 @@ import Env from "./calcifer/env";
 import reactable from "reactablejs";
 import { C } from "./Data";
 
-const Canv: React.FC = ({ getRef, getDropFn }: any) => {
-  const ref = React.useCallback(node => {
+const Canv = ({ getRef, theref }: any) => {
+  const [sk, setSk] = React.useState<any>(null);
+  React.useImperativeHandle(theref, () => ({
+    onDrop(card: C) {
+      sk.onDrop(card);
+    }
+  }));
+  const ref = React.useCallback((node: any) => {
     if (node !== null) {
-      const sketch = (p: p5) => new Env(p);
+      const sketch = (p: p5) => {
+        const e = new Env(p);
+        setSk(e);
+        return e;
+      };
       new p5(sketch, node);
     }
-  }, []);
-
-  React.useEffect(() => {
-    getDropFn((d: C) => console.log(`hi`, d));
   }, []);
 
   return (
@@ -24,38 +30,41 @@ const Canv: React.FC = ({ getRef, getDropFn }: any) => {
 };
 
 // use `as any` to coerce
-const Reactable = reactable(Canv);
+const Reactable = React.forwardRef((props: any, ref: any) => {
+  const sub: React.FC = React.useMemo(
+    () => (ps: any) => <Canv ref={ref} {...ps} />,
+    [ref]
+  );
+  const Cl = React.useMemo(() => reactable(sub), [sub]);
+  return <Cl {...props} />;
+});
 
 interface IProps {
-  dropped(id: string): C;
+  dropped(id: string, cb: (card: C) => void): void;
 }
 
 const Canvas: React.FC<IProps> = ({ dropped }: IProps) => {
-  const [dropfn, setDropfn] = React.useState<(card: C) => void>(console.log);
-  const setdbfn = React.useCallback(
-    (f: any) => {
-      console.log(f);
-      setDropfn(() => f);
-    },
-    [setDropfn]
-  );
-  const cb = React.useCallback((c: C) => dropfn(c), [dropfn]);
+  const ref = React.useRef<any>();
   return (
     <Reactable
-      dropzone={{
-        accept: ({ dropzone, draggableElement }) => {
-          if (draggableElement.dataset.cardId) {
-            return true;
-          } else return false;
-        },
-        ondrop: ({ relatedTarget }) => {
-          console.log(relatedTarget.dataset.cardId);
-          const c = dropped(relatedTarget.dataset.cardId);
-          cb(c);
-        },
-        overlap: 0.5
-      }}
-      getDropFn={setdbfn}
+      dropzone={
+        {
+          accept: ({ dropzone, draggableElement }) => {
+            if (draggableElement.dataset.cardId) {
+              return true;
+            } else return false;
+          },
+          ondrop: ({ relatedTarget }) => {
+            dropped(relatedTarget.dataset.cardId, (c: C) => {
+              if (ref && ref.current) {
+                ref.current.onDrop(c);
+              }
+            });
+          },
+          overlap: 0.5
+        } as Interact.DropzoneOptions
+      }
+      theref={ref}
     />
   );
 };

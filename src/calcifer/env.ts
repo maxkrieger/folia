@@ -1,6 +1,7 @@
 import * as p5 from "p5";
 import Matter from "matter-js";
 import Thing from "./ThingCard";
+import { C } from "../Data";
 // import Attribute from "./AttributeCard";
 // import Ball from "./things/Ball";
 // import Big from "./things/Big";
@@ -28,6 +29,9 @@ export default class Env {
   }
   public windowResized = () => {
     this.p.resizeCanvas(this.p.windowWidth, this.p.windowHeight / 2);
+  };
+  public onDrop = (card: C) => {
+    console.log("peekaboo!", card);
   };
   public addThing = (thing: Thing) => {
     thing.getEffect((name, payload) => {

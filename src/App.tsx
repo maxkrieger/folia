@@ -34,13 +34,15 @@ const App: React.FC = () => {
   return (
     <div style={{ width: "100%", height: "100%" }}>
       <Canvas
-        dropped={(id: string) => {
-          const [found, deleted] = dropDelete(id, state.cards);
-          setState(prevState => ({
-            ...prevState,
-            cards: deleted
-          }));
-          return found;
+        dropped={(id: string, cb: (card: C) => void) => {
+          setState(prevState => {
+            const [found, deleted] = dropDelete(id, prevState.cards);
+            cb(found);
+            return {
+              ...prevState,
+              cards: deleted
+            };
+          });
         }}
       />
       {state.cards.map((card: C) => (
