@@ -10,9 +10,7 @@ export default class Turtle extends Thing {
   public x: number;
   public y: number;
   public img: p5.Image;
-  public motionInterval: number;
   public rotationInterval: number;
-  public moving = false;
   public rainbowMode = false;
   public penMode: { enable: boolean; rainbow: boolean; penHistory: any[] } = {
     enable: false,
@@ -101,14 +99,9 @@ export default class Turtle extends Thing {
     this.img = this.p.loadImage(turtle);
 
     Matter.Composite.add(this.composite, Matter.Bodies.rectangle(x, y, 48, 50));
-    this.setMotionInterval();
     this.setRotationInterval();
   }
-  public setMotionInterval = () => {
-    this.motionInterval = window.setInterval(() => {
-      this.moving = !this.moving;
-    }, this.p.randomGaussian(700, 100));
-  };
+
   public setRotationInterval = () => {
     this.rotationInterval = window.setInterval(() => {
       Matter.Body.setAngularVelocity(
@@ -131,7 +124,7 @@ export default class Turtle extends Thing {
     this.p.pop();
   };
   public handlePen = () => {
-    if (this.p.frameCount % 10 === 0) {
+    if (this.penMode.enable && this.p.frameCount % 20 === 0) {
       const { x, y } = this.composite.bodies[0].position;
       this.penMode.penHistory.push({
         x,
@@ -160,7 +153,7 @@ export default class Turtle extends Thing {
   public draw = () => {
     // this.debugBounds();
     const F = Matter.Vector.rotate(
-      Matter.Vector.create(0, -1),
+      Matter.Vector.create(0, -0.5),
       this.composite.bodies[0].angle
     );
     Matter.Body.setVelocity(this.composite.bodies[0], F);
@@ -184,7 +177,6 @@ export default class Turtle extends Thing {
     });
   };
   public cancel = () => {
-    window.clearInterval(this.motionInterval);
     window.clearInterval(this.rotationInterval);
     Matter.World.remove(this.world, this.composite.bodies[0]);
     if (this.child) {
