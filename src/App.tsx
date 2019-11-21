@@ -19,7 +19,8 @@ const createCard = (name: string, x: number, y: number): C => ({
   color: "#" + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
   hasParent: false,
   coords: { x, y },
-  isTemplate: true
+  isTemplate: true,
+  angle: 0
 });
 
 interface IState {

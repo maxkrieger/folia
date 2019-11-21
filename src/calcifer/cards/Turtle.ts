@@ -10,6 +10,9 @@ export default class Turtle extends Thing {
   public x: number;
   public y: number;
   public img: p5.Image;
+  public interval: number;
+  public moving = false;
+
   public getEffect = (cb: (name: string, payload: any) => void) => {
     const nb = new Turtle(this.p, this.world, this.x, this.y, this.child);
     Matter.World.add(this.world, nb.composite);
@@ -83,6 +86,18 @@ export default class Turtle extends Thing {
       this.composite,
       Matter.Bodies.rectangle(x, y, 48 / 2, 60 / 2)
     );
+    this.interval = window.setInterval(() => {
+      if (this.moving) {
+        Matter.Body.setVelocity(this.composite.bodies[0], { x: 0, y: 0 });
+      } else {
+        const F = Matter.Vector.rotate(
+          Matter.Vector.create(0, -1),
+          this.composite.bodies[0].angle
+        );
+        Matter.Body.setVelocity(this.composite.bodies[0], F);
+      }
+      this.moving = !this.moving;
+    }, this.p.randomGaussian(750, 100));
   }
   public setup() {}
   public draw = () => {
@@ -100,6 +115,8 @@ export default class Turtle extends Thing {
     });
   };
   public cancel = () => {
+    window.clearInterval(this.interval);
+    Matter.World.remove(this.world, this.composite.bodies[0]);
     if (this.child) {
       this.child.cancel();
     }

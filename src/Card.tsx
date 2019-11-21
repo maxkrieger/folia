@@ -1,8 +1,8 @@
 import * as React from "react";
 import reactable from "reactablejs";
-import Duck from "./Duck";
 import { C, depth, shiftLeafX } from "./Data";
 import interact from "interactjs";
+import CardIndex from "./calcifer/CardIndex";
 
 export const CARD_WIDTH = 165 / 2;
 
@@ -25,29 +25,32 @@ interface ISCProps {
   isUnrelated(isUnrelated: C[], id1: string, id2: string): boolean;
 }
 
-const StaticCard: React.FC<any> = ({ cardData, dropping }: any) => (
-  <div
-    style={{
-      width: CARD_WIDTH,
-      height: CARD_HEIGHT,
-      backgroundColor: dropping ? "#6BCAFF" : "#FFFFFF",
-      display: "flex",
-      justifyContent: "center",
-      border: "1px solid black",
-      alignItems: "center",
-      cursor: "grab"
-    }}
-  >
-    <Duck color={cardData.color} />
-  </div>
-);
+const StaticCard: React.FC<any> = ({ cardData, dropping }: any) => {
+  const Icon = CardIndex[cardData.name][1];
+  return (
+    <div
+      style={{
+        width: CARD_WIDTH,
+        height: CARD_HEIGHT,
+        backgroundColor: dropping ? "#6BCAFF" : "#FFFFFF",
+        display: "flex",
+        justifyContent: "center",
+        border: "1px solid black",
+        alignItems: "center",
+        cursor: "grab",
+        zIndex: 10
+      }}
+    >
+      <Icon color={cardData.color} />
+    </div>
+  );
+};
 
 const SC: React.FC<ISCProps> = (props: ISCProps) => {
   const {
     getRef,
     x,
     y,
-    angle,
     dropping,
     cardData,
     onSetCoords,
@@ -59,7 +62,7 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
   } = props;
 
   const c = <StaticCard cardData={cardData} dropping={dropping} />;
-  const unrelated = React.useCallback(isUnrelated, [allCards]);
+  const isSingleton = cardData.child === undefined && !cardData.hasParent;
   const selfcontain = (
     <div
       style={{
@@ -67,11 +70,11 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
         left: x,
         top: y,
         opacity: mousedown ? 0.5 : 1,
-        transition: "opacity 0.25s",
-        transform: `rotate(${angle}deg)`,
+        transition: "opacity 0.25s, transform 0.25s",
+        transform: `rotate(${isSingleton ? cardData.angle : 0}deg)`,
         boxSizing: "border-box",
         touchAction: "none",
-        zIndex: mousedown ? 1000 : 5
+        zIndex: mousedown ? 1000 : 10
       }}
       data-card-id={cardData.instanceid}
       ref={getRef}
@@ -98,7 +101,7 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
       onSetCoords={onSetCoords}
       onDrop={ond}
       onLift={onLift}
-      isUnrelated={unrelated}
+      isUnrelated={isUnrelated}
     />
   );
   return (
@@ -201,7 +204,8 @@ const Card: React.FC<ICardProps> = ({
           left: cardData.coords.x - GUTTER_SIZE,
           top: cardData.coords.y - GUTTER_SIZE,
           backgroundColor: "tan",
-          borderRadius: "10px"
+          borderRadius: "10px",
+          zIndex: 10
         }}
       />
       {c}

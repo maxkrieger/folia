@@ -12,6 +12,7 @@ export interface C {
   hasParent: boolean;
   coords: ICoords;
   isTemplate: boolean;
+  angle: number;
 }
 
 export const setCoords = (dy: number, dx: number, id: string, card: C): C =>
@@ -135,13 +136,13 @@ export const lift = (cards: C[], id: string): C[] => {
     console.error(`ASSERT: cannot find ID ${id}`);
     return cards;
   }
-  if (!leaf.hasParent) {
-    return cards;
-  }
   const removed = cards
     .map((card: C) => deleteByID(id, card))
     .filter((card: C | undefined) => card !== undefined) as C[];
-  return [...removed, { ...leaf, hasParent: false }];
+  return [
+    ...removed,
+    { ...leaf, hasParent: false, angle: Math.random() * 16 - 8 }
+  ];
 };
 
 export const depth = (card: C): number =>

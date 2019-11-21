@@ -35,7 +35,7 @@ export default class Env {
   };
   public construct = (card: C): Card => {
     // NOTE: coords.x/y are card specific
-    return new CardIndex[card.name](
+    return new CardIndex[card.name][0](
       this.p,
       this.engine.world,
       card.coords.x,
@@ -57,7 +57,7 @@ export default class Env {
     const mouseParams = {
       mouse: this.mouse,
       constraint: {
-        stiffness: 0.3,
+        stiffness: 0.1,
         angularStiffness: 0.95
       } as any
     };
@@ -71,16 +71,31 @@ export default class Env {
 
     this.mouseConstraint.mouse.pixelRatio = this.p.pixelDensity();
     Matter.World.add(this.engine.world, this.mouseConstraint);
-    Matter.World.add(
-      this.engine.world,
+    const walls = [
       Matter.Bodies.rectangle(
         0,
         this.p.windowHeight / 2 + 50,
         this.p.windowWidth,
         50,
         { isStatic: true }
+      ),
+      Matter.Bodies.rectangle(0, -50, this.p.windowWidth, 50, {
+        isStatic: true
+      }),
+      Matter.Bodies.rectangle(-50, 0, 50, this.p.windowHeight / 2, {
+        isStatic: true
+      }),
+      Matter.Bodies.rectangle(
+        this.p.windowWidth - 50,
+        0,
+        50,
+        this.p.windowHeight / 2,
+        {
+          isStatic: true
+        }
       )
-    );
+    ];
+    Matter.World.add(this.engine.world, walls);
     Matter.Engine.run(this.engine);
   };
   public draw = () => {
