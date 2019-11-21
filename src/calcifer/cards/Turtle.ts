@@ -12,9 +12,11 @@ export default class Turtle extends Thing {
   public img: p5.Image;
   public interval: number;
   public moving = false;
+  public rainbowMode = false;
 
   public getEffect = (cb: (name: string, payload: any) => void) => {
     const nb = new Turtle(this.p, this.world, this.x, this.y, this.child);
+    nb.Setup();
     Matter.World.add(this.world, nb.composite);
     if (nb.child) {
       nb.child.getEffect((name: string, payload: any) => {
@@ -27,6 +29,9 @@ export default class Turtle extends Thing {
               y: 0.01 * payload
             }
           );
+        }
+        if (name === "rainbow") {
+          nb.rainbowMode = true;
         }
         if (name === "big") {
           //   Matter.Body.scale(
@@ -99,7 +104,7 @@ export default class Turtle extends Thing {
       this.moving = !this.moving;
     }, this.p.randomGaussian(750, 100));
   }
-  public setup() {}
+  public setup = () => {};
   public draw = () => {
     this.p.push();
     this.p.angleMode(this.p.RADIANS);
@@ -108,6 +113,10 @@ export default class Turtle extends Thing {
       this.composite.bodies[0].vertices[0].y
     );
     this.p.rotate(this.composite.bodies[0].angle);
+    if (this.rainbowMode) {
+      this.p.colorMode(this.p.HSB, 1000);
+      this.p.tint((this.p.millis() - this.startMillis) % 1000, 500, 1000);
+    }
     this.p.image(this.img, 0, 0);
     this.p.pop();
     this.drawableChildren.forEach(child => {

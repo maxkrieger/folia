@@ -11,6 +11,7 @@ export default class Ball extends Thing {
   public y: number;
   public getEffect = (cb: (name: string, payload: any) => void) => {
     const nb = new Ball(this.p, this.world, this.x, this.y, this.child);
+    nb.Setup();
     Matter.World.add(this.world, nb.composite);
     if (nb.child) {
       nb.child.getEffect((name: string, payload: any) => {

@@ -11,6 +11,8 @@ export default class Env {
   public canvas: p5.Renderer;
   public p: p5;
   public engine: Matter.Engine;
+  public rainbowMode = false;
+  public startMillis = 0;
 
   public things: Thing[] = [];
 
@@ -30,8 +32,14 @@ export default class Env {
     const constructed = this.construct(card);
     if (constructed instanceof Thing) {
       this.addThing(constructed);
+    } else {
+      constructed.getEffect((name, payload) => {
+        if (name === "rainbow") {
+          this.rainbowMode = !this.rainbowMode;
+        }
+      });
+      // Env-wide attrs or x/y placeholder
     }
-    // else: do placeholder?
   };
   public construct = (card: C): Card => {
     // NOTE: coords.x/y are card specific
@@ -44,6 +52,7 @@ export default class Env {
     );
   };
   public addThing = (thing: Thing) => {
+    thing.Setup();
     thing.getEffect((name, payload) => {
       this.things.push(payload);
     });
@@ -67,8 +76,9 @@ export default class Env {
     );
     this.engine.world.gravity.y = 0;
 
-    this.things.forEach(t => t.setup());
+    this.things.forEach(t => t.Setup());
 
+    this.startMillis = this.p.millis();
     this.mouseConstraint.mouse.pixelRatio = this.p.pixelDensity();
     Matter.World.add(this.engine.world, this.mouseConstraint);
     const walls = [
@@ -100,7 +110,12 @@ export default class Env {
   };
   public draw = () => {
     // Matter.Engine.update(this.engine);
-    this.p.background("#322931");
+    if (this.rainbowMode) {
+      this.p.colorMode(this.p.HSB, 1000);
+      this.p.background((this.p.millis() - this.startMillis) % 1000, 500, 400);
+    } else {
+      this.p.background("#322931");
+    }
     this.things.forEach(t => {
       t.draw();
     });

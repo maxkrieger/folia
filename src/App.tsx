@@ -32,11 +32,11 @@ const setAllCoords = (dy: number, dx: number, id: string, cards: C[]) =>
 
 const allCards = (bottomY: number) =>
   Object.keys(CardIndex).map((name: string, index: number) =>
-    createCard(name, (CARD_WIDTH + GUTTER_SIZE) * index, bottomY)
+    createCard(name, (CARD_WIDTH + GUTTER_SIZE) * index + GUTTER_SIZE, bottomY)
   );
 
 const App: React.FC = () => {
-  const allcards = allCards(window.innerHeight - CARD_HEIGHT);
+  const allcards = allCards(window.innerHeight - CARD_HEIGHT - GUTTER_SIZE);
   const [state, setState] = useState<IState>({
     cards: allcards
   });
