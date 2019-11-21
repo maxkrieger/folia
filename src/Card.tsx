@@ -1,7 +1,7 @@
 import * as React from "react";
 import reactable from "reactablejs";
 import Duck from "./Duck";
-import { C, ICoords, depth, shiftLeafX } from "./Data";
+import { C, depth, shiftLeafX } from "./Data";
 import interact from "interactjs";
 
 export const CARD_WIDTH = 165 / 2;
@@ -17,12 +17,30 @@ interface ISCProps {
   angle: number;
   dropping: boolean;
   cardData: C;
+  allCards: C[];
   mousedown: boolean;
   onSetCoords(dy: number, dx: number, id: string): void;
   ond(parent: string, child: string): void;
   onLift(id: string): void;
-  isUnrelated(id1: string, id2: string): boolean;
+  isUnrelated(isUnrelated: C[], id1: string, id2: string): boolean;
 }
+
+const StaticCard: React.FC<any> = ({ cardData, dropping }: any) => (
+  <div
+    style={{
+      width: CARD_WIDTH,
+      height: CARD_HEIGHT,
+      backgroundColor: dropping ? "#6BCAFF" : "#FFFFFF",
+      display: "flex",
+      justifyContent: "center",
+      border: "1px solid black",
+      alignItems: "center",
+      cursor: "grab"
+    }}
+  >
+    <Duck color={cardData.color} />
+  </div>
+);
 
 const SC: React.FC<ISCProps> = (props: ISCProps) => {
   const {
@@ -36,23 +54,12 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
     ond,
     onLift,
     mousedown,
-    isUnrelated
+    isUnrelated,
+    allCards
   } = props;
 
-  const c = (
-    <div
-      style={{
-        width: CARD_WIDTH,
-        height: CARD_HEIGHT,
-        backgroundColor: dropping ? "#6BCAFF" : "#FFFFFF",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center"
-      }}
-    >
-      <Duck color={cardData.color} />
-    </div>
-  );
+  const c = <StaticCard cardData={cardData} dropping={dropping} />;
+  const unrelated = React.useCallback(isUnrelated, [allCards]);
   const selfcontain = (
     <div
       style={{
@@ -62,10 +69,9 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
         opacity: mousedown ? 0.5 : 1,
         transition: "opacity 0.25s",
         transform: `rotate(${angle}deg)`,
-        border: "1px solid black",
         boxSizing: "border-box",
         touchAction: "none",
-        zIndex: mousedown ? 1000 : "initial"
+        zIndex: mousedown ? 1000 : 5
       }}
       data-card-id={cardData.instanceid}
       ref={getRef}
@@ -88,10 +94,11 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
             )
           : cardData.child
       }
+      allCards={allCards}
       onSetCoords={onSetCoords}
       onDrop={ond}
       onLift={onLift}
-      isUnrelated={isUnrelated}
+      isUnrelated={unrelated}
     />
   );
   return (
@@ -102,27 +109,54 @@ const SC: React.FC<ISCProps> = (props: ISCProps) => {
   );
 };
 
-const Reactable = reactable(SC);
-
 interface ICardProps {
   cardData: C;
+  allCards: C[];
   onSetCoords(dy: number, dx: number, id: string): void;
   onDrop(parent: string, child: string): void;
   onLift(id: string): void;
-  isUnrelated(id1: string, id2: string): boolean;
+  isUnrelated(cards: C[], id1: string, id2: string): boolean;
 }
+
+const Reactable = reactable(SC);
 
 const Card: React.FC<ICardProps> = ({
   cardData,
   onSetCoords,
   onDrop,
   onLift,
-  isUnrelated
+  isUnrelated,
+  allCards
 }: ICardProps) => {
   const [dropping, setDropping] = React.useState(false);
 
   const [mousedown, setMousedown] = React.useState(false);
   const isHead = cardData.child !== undefined && !cardData.hasParent;
+
+  // This doesn't actually help since reactable's a HOC
+  const dropzone = React.useMemo(
+    () => ({
+      ondragenter: () => setDropping(true),
+      ondragleave: () => setDropping(false),
+      ondrop: ({ relatedTarget }: any) => {
+        onDrop(cardData.instanceid, relatedTarget.dataset.cardId);
+        setDropping(false);
+      },
+      overlap: 0.1,
+      accept: ({ dropzone, draggableElement }: any) => {
+        if (draggableElement.dataset.cardId) {
+          return (
+            isUnrelated(
+              allCards,
+              cardData.instanceid,
+              draggableElement.dataset.cardId as string
+            ) && cardData.instanceid !== draggableElement.dataset.cardId
+          );
+        } else return false;
+      }
+    }),
+    [allCards, cardData.instanceid, isUnrelated, onDrop]
+  );
 
   const c = (
     <Reactable
@@ -138,25 +172,7 @@ const Card: React.FC<ICardProps> = ({
           ]
         } as any
       }
-      dropzone={{
-        accept: ({ dropzone, draggableElement }) => {
-          if (draggableElement.dataset.cardId) {
-            return (
-              isUnrelated(
-                cardData.instanceid,
-                draggableElement.dataset.cardId as string
-              ) && cardData.instanceid !== draggableElement.dataset.cardId
-            );
-          } else return false;
-        },
-        ondragenter: () => setDropping(true),
-        ondragleave: () => setDropping(false),
-        ondrop: ({ relatedTarget }) => {
-          onDrop(cardData.instanceid, relatedTarget.dataset.cardId);
-          setDropping(false);
-        },
-        overlap: 0.1
-      }}
+      dropzone={dropzone}
       dropping={dropping}
       onDown={() => {
         setMousedown(true);
@@ -169,6 +185,7 @@ const Card: React.FC<ICardProps> = ({
       onSetCoords={onSetCoords}
       onLift={onLift}
       ond={onDrop}
+      allCards={allCards}
       isUnrelated={isUnrelated}
       {...cardData.coords}
     />
@@ -192,4 +209,4 @@ const Card: React.FC<ICardProps> = ({
   );
 };
 
-export default Card;
+export { Card, StaticCard };

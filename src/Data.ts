@@ -104,8 +104,7 @@ export const isUnrelated = (cards: C[], id1: string, id2: string): boolean => {
     .find((c: C | undefined) => c !== undefined);
 
   if (head1 === undefined || head2 === undefined) {
-    console.log(`Cannot find ${id1} ${head1} ${id2} ${head2}`);
-    return false;
+    return true;
   }
 
   return (

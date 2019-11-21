@@ -1,16 +1,17 @@
 import * as p5 from "p5";
 import Matter from "matter-js";
-import Thing from "./ThingCard";
-import Card from "./CardClass";
+import Thing from "../ThingCard";
+import Card from "../CardClass";
+import turtle from "./turtle.svg";
 
-export default class Ball extends Thing {
+export default class Turtle extends Thing {
   public p: p5;
   public world: Matter.World;
-  public radius: number;
   public x: number;
   public y: number;
+  public img: p5.Image;
   public getEffect = (cb: (name: string, payload: any) => void) => {
-    const nb = new Ball(this.p, this.world, this.x, this.y, this.child);
+    const nb = new Turtle(this.p, this.world, this.x, this.y, this.child);
     Matter.World.add(this.world, nb.composite);
     if (nb.child) {
       nb.child.getEffect((name: string, payload: any) => {
@@ -25,12 +26,12 @@ export default class Ball extends Thing {
           );
         }
         if (name === "big") {
-          Matter.Body.scale(
-            nb.composite.bodies[0],
-            payload / nb.radius,
-            payload / nb.radius
-          );
-          nb.radius = payload;
+          //   Matter.Body.scale(
+          //     nb.composite.bodies[0],
+          //     payload / nb.radius,
+          //     payload / nb.radius
+          //   );
+          //   nb.radius = payload;
         }
         if (payload instanceof Thing) {
           const bodyA = Matter.Composite.allBodies(nb.composite)[0];
@@ -47,11 +48,12 @@ export default class Ball extends Thing {
               bodyB,
               pointA: { x: bodyAWidth * 1, y: bodyAHeight * 0 },
               pointB: {
-                x: bodyBWidth * -0.5,
+                x: bodyBWidth * -0.8,
                 y: bodyBHeight * 0
               },
               length: 8,
-              stiffness: 0.3
+              damping: 0.1,
+              stiffness: 0.1
             })
           );
           nb.drawableChildren.push(payload);
@@ -69,27 +71,30 @@ export default class Ball extends Thing {
     y: number = 0,
     child?: Card
   ) {
-    super("ball");
-    const radius = 50;
+    super("turtle");
     this.child = child;
     this.x = x;
     this.y = y;
     this.world = world;
+    this.p = p;
+    this.img = this.p.loadImage(turtle);
 
     Matter.Composite.add(
       this.composite,
-      Matter.Bodies.circle(x, y, radius / 2)
+      Matter.Bodies.rectangle(x, y, 48 / 2, 60 / 2)
     );
-    this.radius = radius;
-    this.p = p;
   }
   public setup() {}
   public draw = () => {
-    this.p.circle(
-      this.composite.bodies[0].position.x,
-      this.composite.bodies[0].position.y,
-      this.radius
+    this.p.push();
+    this.p.angleMode(this.p.RADIANS);
+    this.p.translate(
+      this.composite.bodies[0].vertices[0].x,
+      this.composite.bodies[0].vertices[0].y
     );
+    this.p.rotate(this.composite.bodies[0].angle);
+    this.p.image(this.img, 0, 0);
+    this.p.pop();
     this.drawableChildren.forEach(child => {
       child.draw();
     });

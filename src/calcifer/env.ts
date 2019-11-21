@@ -2,13 +2,8 @@ import * as p5 from "p5";
 import Matter from "matter-js";
 import Thing from "./ThingCard";
 import { C } from "../Data";
-import Ball from "./Ball";
-// import Attribute from "./AttributeCard";
-// import Ball from "./things/Ball";
-// import Big from "./things/Big";
-// import Repeat from "./things/Repeat";
-// import Oscillate from "./things/Oscillate";
-// import Emitter from "./things/Emitter";
+import CardIndex from "./CardIndex";
+import Card from "./CardClass";
 
 export default class Env {
   public mouse: Matter.Mouse;
@@ -32,9 +27,20 @@ export default class Env {
     this.p.resizeCanvas(this.p.windowWidth, this.p.windowHeight / 2);
   };
   public onDrop = (card: C) => {
-    console.log("peekaboo!", card);
-    this.addThing(
-      new Ball(this.p, this.engine.world, card.coords.x, card.coords.y)
+    const constructed = this.construct(card);
+    if (constructed instanceof Thing) {
+      this.addThing(constructed);
+    }
+    // else: do placeholder?
+  };
+  public construct = (card: C): Card => {
+    // NOTE: coords.x/y are card specific
+    return new CardIndex[card.name](
+      this.p,
+      this.engine.world,
+      card.coords.x,
+      card.coords.y,
+      card.child ? this.construct(card.child) : undefined
     );
   };
   public addThing = (thing: Thing) => {
@@ -60,53 +66,21 @@ export default class Env {
       mouseParams
     );
     this.engine.world.gravity.y = 0;
-    // this.addThing(
-    //   new Ball(
-    //     this.p,
-    //     this.engine.world,
-    //     this.updateComposite,
-    //     100,
-    //     100,
-    //     new Big(this.p, new Repeat())
-    //   )
-    // );
-    // this.addThing(
-    //   new Ball(
-    //     this.p,
-    //     this.engine.world,
-    //     200,
-    //     200,
-    //     new Oscillate(this.p, new Repeat())
-    //   )
-    // );
-    // this.addThing(
-    //   new Ball(
-    //     this.p,
-    //     this.engine.world,
-    //     400,
-    //     400,
-    //     new Ball(this.p, this.engine.world, 450, 450)
-    //   )
-    // );
-    // this.addThing(
-    //   new Emitter(
-    //     this.p,
-    //     this.engine.world,
-    //     100,
-    //     100,
-    //     new Ball(
-    //       this.p,
-    //       this.engine.world,
-    //       10,
-    //       10,
-    //       new Oscillate(this.p, new Repeat())
-    //     )
-    //   )
-    // );
+
     this.things.forEach(t => t.setup());
 
     this.mouseConstraint.mouse.pixelRatio = this.p.pixelDensity();
     Matter.World.add(this.engine.world, this.mouseConstraint);
+    Matter.World.add(
+      this.engine.world,
+      Matter.Bodies.rectangle(
+        0,
+        this.p.windowHeight / 2 + 50,
+        this.p.windowWidth,
+        50,
+        { isStatic: true }
+      )
+    );
     Matter.Engine.run(this.engine);
   };
   public draw = () => {

@@ -3,12 +3,19 @@ import p5 from "p5";
 import Env from "./calcifer/env";
 import reactable from "reactablejs";
 import { C } from "./Data";
+import { CARD_WIDTH, CARD_HEIGHT } from "./Card";
 
 const Canv = ({ getRef, theref }: any) => {
   const [sk, setSk] = React.useState<any>(null);
   React.useImperativeHandle(theref, () => ({
     onDrop(card: C) {
-      sk.onDrop(card);
+      sk.onDrop({
+        ...card,
+        coords: {
+          x: card.coords.x + CARD_WIDTH / 2,
+          y: card.coords.y + CARD_HEIGHT / 2
+        }
+      });
     }
   }));
   const ref = React.useCallback((node: any) => {
