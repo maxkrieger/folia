@@ -11,6 +11,7 @@ export interface C {
   child?: C;
   hasParent: boolean;
   coords: ICoords;
+  isTemplate: boolean;
 }
 
 export const setCoords = (dy: number, dx: number, id: string, card: C): C =>
@@ -18,6 +19,7 @@ export const setCoords = (dy: number, dx: number, id: string, card: C): C =>
     ? {
         ...card,
         coords: { x: card.coords.x + dx, y: card.coords.y + dy },
+        isTemplate: false,
         child: card.child
           ? setCoords(dy, dx, card.child.instanceid, card.child)
           : card.child
@@ -39,6 +41,18 @@ export const deleteByID = (id: string, card: C): C | undefined =>
     : card.child
     ? { ...card, child: deleteByID(id, card.child) }
     : card;
+
+export const findInAllByID = (id: string, cards: C[]): C => {
+  const found = cards
+    .map((card: C) => findByID(id, card))
+    .find((c: C | undefined) => c !== undefined);
+  if (found === undefined) {
+    console.error(`Cannot find card ${id}`);
+    //@ts-ignore
+    return;
+  }
+  return found;
+};
 
 export const dropDelete = (id: string, cards: C[]): [C, C[]] => {
   const found = cards
