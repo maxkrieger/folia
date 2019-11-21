@@ -1,8 +1,18 @@
 import AttributeCard from "../AttributeCard";
+import Card from "../CardClass";
+import p5 from "p5";
 
 export default class Pen extends AttributeCard {
-  constructor() {
+  constructor(
+    p: p5,
+    world: Matter.World,
+
+    x: number = 0,
+    y: number = 0,
+    child?: Card
+  ) {
     super("pen");
+    this.child = child;
   }
   public getEffect(cb: (name: string, payload: any) => void) {
     if (this.child) {
@@ -11,11 +21,11 @@ export default class Pen extends AttributeCard {
           cb("pen", { rainbow: true });
         } else {
           cb(name, payload);
-          cb("pen", null);
+          cb("pen", { rainbow: false });
         }
       });
     } else {
-      cb("pen", null);
+      cb("pen", { rainbow: false });
     }
   }
   public cancel() {

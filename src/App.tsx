@@ -16,7 +16,8 @@ import CardIndex from "./calcifer/CardIndex";
 const createCard = (name: string, x: number, y: number): C => ({
   name,
   instanceid: uniqid("card-"),
-  color: "#" + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
+  // color: "#" + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
+  color: "#000000",
   hasParent: false,
   coords: { x, y },
   isTemplate: true,
