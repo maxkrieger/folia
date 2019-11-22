@@ -9,6 +9,7 @@ export default class Turtle extends Thing {
   public rotationInterval: number;
   public rainbowMode = false;
   public virtualCanvas: p5.Graphics;
+  public maxage = 180000;
   public penMode: {
     enable: boolean;
     rainbow: boolean;
@@ -163,6 +164,9 @@ export default class Turtle extends Thing {
     }
   };
   public draw = () => {
+    if (this.p.millis() - this.startMillis >= this.maxage) {
+      this.cancel();
+    }
     const mouseover = Matter.Query.point([this.composite.bodies[0]], {
       x: this.p.mouseX,
       y: this.p.mouseY

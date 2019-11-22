@@ -100,8 +100,6 @@ export default class Env {
     );
     this.engine.world.gravity.y = 0;
 
-    this.things.forEach(t => t.Setup());
-
     this.startMillis = this.p.millis();
     this.mouseConstraint.mouse.pixelRatio = this.p.pixelDensity();
     Matter.World.add(this.engine.world, this.mouseConstraint);
@@ -152,12 +150,31 @@ export default class Env {
       }
     });
   };
+  public collideDog = () => {
+    const colls = this.walls.map((wall: any) =>
+      (Matter.Query as any).collides(
+        wall,
+        Matter.Composite.allBodies(this.engine.world)
+      )
+    );
+    const fl = colls.flat();
+    fl.forEach(({ bodyB, bodyA }: any) => {
+      if (!bodyB.isStatic) {
+        Matter.Body.rotate(bodyB, Math.PI);
+      }
+      if (!bodyA.isStatic) {
+        Matter.Body.rotate(bodyA, Math.PI);
+      }
+    });
+  };
   public getHeight = () => {
     return this.p.windowHeight * (2 / 3);
   };
   public draw = () => {
     // Matter.Engine.update(this.engine);
+    this.things = this.things.filter(thing => !thing.cancelled);
     this.things.forEach(this.watchdog);
+    this.collideDog();
 
     if (this.rainbowMode) {
       this.p.colorMode(this.p.HSB, 1000);

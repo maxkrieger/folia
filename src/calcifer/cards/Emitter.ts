@@ -7,6 +7,7 @@ export default class Emitter extends Thing {
   public emitInterval: number;
   public radius = 10;
   public count = 20;
+  public maxage = 50000;
   constructor(
     p: p5,
     world: Matter.World,
@@ -29,6 +30,7 @@ export default class Emitter extends Thing {
     );
   }
   public cancel = () => {
+    this.cancelled = true;
     window.clearInterval(this.emitInterval);
     this.drawableChildren.forEach(child => {
       Matter.Composite.remove(child.world, child.composite.bodies[0]);
@@ -36,10 +38,12 @@ export default class Emitter extends Thing {
     if (this.child) {
       this.child.cancel();
     }
+    this.drawableChildren = [];
     Matter.Composite.remove(this.world, this.composite.bodies[0]);
   };
   public getEffect = (cb: (name: string, payload: any) => void) => {
     const ne = new Emitter(this.p, this.world, this.x, this.y, this.child);
+    ne.Setup();
     if (ne.child && ne.child.name === this.name) {
       ne.child.getEffect(cb);
       return;
@@ -82,6 +86,20 @@ export default class Emitter extends Thing {
     cb(this.name, ne);
   };
   public draw = () => {
+    const mouseover = Matter.Query.point([this.composite.bodies[0]], {
+      x: this.p.mouseX,
+      y: this.p.mouseY
+    });
+    if (
+      mouseover.length > 0 &&
+      this.p.mouseIsPressed &&
+      this.composite.bodies[0].position.y >= this.getHeight() - 50
+    ) {
+      this.onDragOut(this);
+    }
+    if (this.p.millis() - this.startMillis >= this.maxage) {
+      this.cancel();
+    }
     this.p.push();
     this.p.fill("white");
     this.p.circle(

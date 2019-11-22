@@ -10,8 +10,8 @@ export default abstract class Thing extends Card {
   protected startMillis = -1;
 
   public Setup = () => {
-    this.setup();
     this.startMillis = this.p.millis();
+    this.setup();
   };
   public abstract setup(): any;
 
@@ -23,6 +23,7 @@ export default abstract class Thing extends Card {
   public child?: Card;
   public x: number;
   public y: number;
+  public cancelled = false;
 
   public onDragOut: (t: Thing) => void = () => {};
   public setOnDragOut = (cb: (t: Thing) => void) => {
