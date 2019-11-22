@@ -19,21 +19,20 @@ const Canv = ({ getRef, theref, addCard }: any) => {
       });
     }
   }));
-  const ref = React.useCallback(
-    (node: any) => {
-      if (node !== null) {
-        const sketch = (p: p5) => {
-          const e = new Env(p, (t: Thing) => {
-            addCard(thingToCard(t));
-          });
-          setSk(e);
-          return e;
-        };
-        new p5(sketch, node);
-      }
-    },
-    [addCard]
-  );
+  const ref = React.useCallback((node: any) => {
+    if (node !== null) {
+      const sketch = (p: p5) => {
+        const e = new Env(p, (t: Thing) => {
+          addCard(thingToCard(t));
+        });
+        setSk(e);
+        return e;
+      };
+      new p5(sketch, node);
+    }
+    // Im sorry
+    // eslint-disable-next-line
+  }, []);
 
   return (
     <div ref={getRef}>
