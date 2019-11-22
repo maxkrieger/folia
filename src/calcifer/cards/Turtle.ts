@@ -60,7 +60,7 @@ export default class Turtle extends Thing {
           //   );
           //   nb.radius = payload;
         }
-        if (payload instanceof Thing) {
+        if (payload instanceof Thing && payload.name !== "emitter") {
           const bodyA = Matter.Composite.allBodies(nb.composite)[0];
           const bodyB = Matter.Composite.allBodies(payload.composite)[0];
           Matter.Composite.add(nb.composite, payload.composite);
