@@ -3,14 +3,10 @@ import Matter from "matter-js";
 import Thing from "../ThingCard";
 import Card from "../CardClass";
 
-export default class Ball extends Thing {
-  public p: p5;
-  public world: Matter.World;
+export default class Particle extends Thing {
   public radius: number;
-  public x: number;
-  public y: number;
   public getEffect = (cb: (name: string, payload: any) => void) => {
-    const nb = new Ball(this.p, this.world, this.x, this.y, this.child);
+    const nb = new Particle(this.p, this.world, this.x, this.y, this.child);
     nb.Setup();
     Matter.World.add(this.world, nb.composite);
     if (nb.child) {
@@ -71,7 +67,7 @@ export default class Ball extends Thing {
     y: number = 0,
     child?: Card
   ) {
-    super("ball");
+    super("particle");
     const radius = 50;
     this.child = child;
     this.x = x;

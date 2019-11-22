@@ -5,6 +5,8 @@ import { C } from "../Data";
 import CardIndex from "./CardIndex";
 import Card from "./CardClass";
 
+const WALL_SIZE = 70;
+
 export default class Env {
   public mouse: Matter.Mouse;
   public mouseConstraint: Matter.MouseConstraint;
@@ -109,21 +111,27 @@ export default class Env {
     this.walls = [
       Matter.Bodies.rectangle(
         0,
-        this.p.windowHeight / 2 + 50,
+        this.p.windowHeight / 2 + WALL_SIZE,
         this.p.windowWidth,
-        50,
+        WALL_SIZE,
         { isStatic: true }
       ),
-      Matter.Bodies.rectangle(0, -50, this.p.windowWidth, 50, {
-        isStatic: true
-      }),
-      Matter.Bodies.rectangle(-50, 0, 50, this.p.windowHeight / 2, {
+      Matter.Bodies.rectangle(0, -WALL_SIZE, this.p.windowWidth, WALL_SIZE, {
         isStatic: true
       }),
       Matter.Bodies.rectangle(
-        this.p.windowWidth - 20,
+        -WALL_SIZE,
         0,
-        50,
+        WALL_SIZE,
+        this.p.windowHeight / 2,
+        {
+          isStatic: true
+        }
+      ),
+      Matter.Bodies.rectangle(
+        this.p.windowWidth - WALL_SIZE,
+        0,
+        WALL_SIZE,
         this.p.windowHeight / 2,
         {
           isStatic: true
@@ -133,8 +141,28 @@ export default class Env {
     Matter.World.add(this.engine.world, this.walls);
     Matter.Engine.run(this.engine);
   };
+  public watchdog = () => {
+    Matter.Composite.allBodies(this.engine.world).forEach(body => {
+      const { x, y } = body.position;
+      if (!body.isStatic) {
+        if (x < 0) {
+          body.position.x = 0;
+        } else if (x > this.p.windowWidth) {
+          body.position.x = this.p.windowWidth - 50;
+        } else if (y < 0) {
+          body.position.y = 0;
+        } else if (y > this.getHeight()) {
+          body.position.y = this.getHeight() - 50;
+        }
+      }
+    });
+  };
+  public getHeight = () => {
+    return this.p.windowHeight / 2;
+  };
   public draw = () => {
     // Matter.Engine.update(this.engine);
+    this.things.forEach(this.watchdog);
     const colls = this.walls.map((wall: any) =>
       (Matter.Query as any).collides(
         wall,

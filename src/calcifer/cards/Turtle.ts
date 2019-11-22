@@ -5,10 +5,6 @@ import Card from "../CardClass";
 import turtle from "./turtle.svg";
 
 export default class Turtle extends Thing {
-  public p: p5;
-  public world: Matter.World;
-  public x: number;
-  public y: number;
   public img: p5.Image;
   public rotationInterval: number;
   public rainbowMode = false;
