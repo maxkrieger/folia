@@ -12,10 +12,17 @@ export default class Turtle extends Thing {
   public img: p5.Image;
   public rotationInterval: number;
   public rainbowMode = false;
-  public penMode: { enable: boolean; rainbow: boolean; penHistory: any[] } = {
+  public virtualCanvas: p5.Graphics;
+  public penMode: {
+    enable: boolean;
+    rainbow: boolean;
+    lastX: number;
+    lastY: number;
+  } = {
     enable: false,
     rainbow: false,
-    penHistory: []
+    lastX: -1,
+    lastY: -1
   };
 
   public getEffect = (cb: (name: string, payload: any) => void) => {
@@ -97,6 +104,10 @@ export default class Turtle extends Thing {
     this.world = world;
     this.p = p;
     this.img = this.p.loadImage(turtle);
+    this.virtualCanvas = this.p.createGraphics(
+      this.p.windowWidth,
+      this.p.windowHeight / 2
+    );
 
     Matter.Composite.add(this.composite, Matter.Bodies.rectangle(x, y, 48, 50));
     this.setRotationInterval();
@@ -124,30 +135,25 @@ export default class Turtle extends Thing {
     this.p.pop();
   };
   public handlePen = () => {
-    if (this.penMode.enable && this.p.frameCount % 20 === 0) {
-      const { x, y } = this.composite.bodies[0].position;
-      this.penMode.penHistory.push({
-        x,
-        y: y + 25
-      });
+    const { x, y } = this.composite.bodies[0].position;
+    if (this.penMode.lastX === -1) {
+      this.penMode.lastX = x;
+      this.penMode.lastY = y;
     }
-    if (this.penMode.enable && this.penMode.penHistory.length > 0) {
-      this.penMode.penHistory.reduce((acc, cur, ind) => {
-        this.p.push();
-        this.p.colorMode(this.p.HSB, 1000);
-        this.p.stroke("white");
-        if (this.penMode.rainbow) {
-          this.p.stroke(
-            (this.p.millis() - this.startMillis + ind * 200) % 1000,
-            500,
-            1000
-          );
-        }
-        this.p.strokeWeight(5);
-        this.p.line(acc.x, acc.y, cur.x, cur.y);
-        this.p.pop();
-        return cur;
-      });
+    if (this.penMode.enable) {
+      const p = this.virtualCanvas;
+      p.push();
+      p.colorMode(this.p.HSB, 1000);
+      p.stroke("white");
+      if (this.penMode.rainbow) {
+        p.stroke((this.p.millis() - this.startMillis) % 1000, 500, 1000);
+      }
+      p.strokeWeight(5);
+      p.line(this.penMode.lastX, this.penMode.lastY, x, y);
+      this.penMode.lastX = x;
+      this.penMode.lastY = y;
+      p.pop();
+      this.p.image(p, 0, 0);
     }
   };
   public draw = () => {
