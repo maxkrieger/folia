@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "c439074e33ca09d67dc61f6f11a1c752",
+    "revision": "22014b168bc6cb51f1ef2b346da682a2",
     "url": "/folia/index.html"
   },
   {
-    "revision": "629e01d1e5c8e320db49",
+    "revision": "501c79595e7fcfa87d75",
     "url": "/folia/static/css/main.4c7dea7e.chunk.css"
   },
   {
@@ -12,8 +12,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/folia/static/js/2.3440f4a9.chunk.js"
   },
   {
-    "revision": "629e01d1e5c8e320db49",
-    "url": "/folia/static/js/main.aadde121.chunk.js"
+    "revision": "501c79595e7fcfa87d75",
+    "url": "/folia/static/js/main.9414e777.chunk.js"
   },
   {
     "revision": "4e7218323008604c6b50",
