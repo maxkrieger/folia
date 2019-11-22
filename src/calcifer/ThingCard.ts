@@ -20,5 +20,10 @@ export default abstract class Thing extends Card {
   public abstract p: p5;
   public drawableChildren: Thing[] = [];
 
+  public onDragOut: (t: Thing) => void = () => {};
+  public setOnDragOut = (cb: (t: Thing) => void) => {
+    this.onDragOut = cb;
+  };
+
   public composite: Matter.Composite;
 }

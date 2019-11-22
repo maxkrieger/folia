@@ -7,22 +7,11 @@ import {
   lift,
   isUnrelated,
   dropDelete,
-  findInAllByID
+  findInAllByID,
+  createCard
 } from "./Data";
-import uniqid from "uniqid";
 import Canvas from "./Canvas";
 import CardIndex from "./calcifer/CardIndex";
-
-const createCard = (name: string, x: number, y: number): C => ({
-  name,
-  instanceid: uniqid("card-"),
-  // color: "#" + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
-  color: "#000000",
-  hasParent: false,
-  coords: { x, y },
-  isTemplate: true,
-  angle: 0
-});
 
 interface IState {
   cards: C[];
@@ -33,7 +22,12 @@ const setAllCoords = (dy: number, dx: number, id: string, cards: C[]) =>
 
 const allCards = (bottomY: number) =>
   Object.keys(CardIndex).map((name: string, index: number) =>
-    createCard(name, (CARD_WIDTH + GUTTER_SIZE) * index + GUTTER_SIZE, bottomY)
+    createCard(
+      name,
+      (CARD_WIDTH + GUTTER_SIZE) * index + GUTTER_SIZE,
+      bottomY,
+      true
+    )
   );
 
 const App: React.FC = () => {
@@ -54,6 +48,12 @@ const App: React.FC = () => {
               cards: deleted
             };
           });
+        }}
+        addCard={(card: C) => {
+          setState(prevState => ({
+            ...prevState,
+            cards: [...prevState.cards, card]
+          }));
         }}
       />
       {state.cards.map((card: C) => (
@@ -79,7 +79,7 @@ const App: React.FC = () => {
               const newcards = c.isTemplate
                 ? [
                     ...setAllCoords(dy, dx, id, prevState.cards),
-                    createCard(c.name, c.coords.x, c.coords.y)
+                    createCard(c.name, c.coords.x, c.coords.y, true)
                   ]
                 : setAllCoords(dy, dx, id, prevState.cards);
               return {

@@ -1,4 +1,7 @@
 import { CARD_WIDTH, GUTTER_SIZE } from "./Card";
+import Thing from "./calcifer/ThingCard";
+import uniqid from "uniqid";
+import Card from "./calcifer/CardClass";
 
 export interface ICoords {
   x: number;
@@ -14,6 +17,41 @@ export interface C {
   isTemplate: boolean;
   angle: number;
 }
+export const createCard = (
+  name: string,
+  x: number,
+  y: number,
+  template = false
+): C => ({
+  name,
+  instanceid: uniqid("card-"),
+  // color: "#" + (0x1000000 + Math.random() * 0xffffff).toString(16).substr(1, 6),
+  color: "#000000",
+  hasParent: false,
+  coords: { x, y },
+  isTemplate: template,
+  angle: 0
+});
+
+export const thingToCard = (t: Thing) => {
+  const card = createCard(
+    t.name,
+    t.composite.bodies[0].position.x,
+    t.composite.bodies[0].position.y
+  );
+  if (t.child) {
+    return insertLeaf(card, anyToCard(t.child));
+  }
+  return card;
+};
+
+export const anyToCard = (c: Card): C => {
+  const card = createCard(c.name, 0, 0);
+  if (c.child) {
+    return insertLeaf(card, anyToCard(c.child));
+  }
+  return card;
+};
 
 export const setCoords = (dy: number, dx: number, id: string, card: C): C =>
   card.instanceid === id

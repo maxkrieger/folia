@@ -2,10 +2,11 @@ import * as React from "react";
 import p5 from "p5";
 import Env from "./calcifer/env";
 import reactable from "reactablejs";
-import { C } from "./Data";
+import { C, thingToCard } from "./Data";
 import { CARD_WIDTH, CARD_HEIGHT } from "./Card";
+import Thing from "./calcifer/ThingCard";
 
-const Canv = ({ getRef, theref }: any) => {
+const Canv = ({ getRef, theref, addCard }: any) => {
   const [sk, setSk] = React.useState<any>(null);
   React.useImperativeHandle(theref, () => ({
     onDrop(card: C) {
@@ -18,16 +19,21 @@ const Canv = ({ getRef, theref }: any) => {
       });
     }
   }));
-  const ref = React.useCallback((node: any) => {
-    if (node !== null) {
-      const sketch = (p: p5) => {
-        const e = new Env(p);
-        setSk(e);
-        return e;
-      };
-      new p5(sketch, node);
-    }
-  }, []);
+  const ref = React.useCallback(
+    (node: any) => {
+      if (node !== null) {
+        const sketch = (p: p5) => {
+          const e = new Env(p, (t: Thing) => {
+            addCard(thingToCard(t));
+          });
+          setSk(e);
+          return e;
+        };
+        new p5(sketch, node);
+      }
+    },
+    [addCard]
+  );
 
   return (
     <div ref={getRef}>
@@ -48,9 +54,10 @@ const Reactable = React.forwardRef((props: any, ref: any) => {
 
 interface IProps {
   dropped(id: string, cb: (card: C) => void): void;
+  addCard(card: C): void;
 }
 
-const Canvas: React.FC<IProps> = ({ dropped }: IProps) => {
+const Canvas: React.FC<IProps> = ({ dropped, addCard }: IProps) => {
   const ref = React.useRef<any>();
   return (
     <Reactable
@@ -72,6 +79,7 @@ const Canvas: React.FC<IProps> = ({ dropped }: IProps) => {
         } as Interact.DropzoneOptions
       }
       theref={ref}
+      addCard={addCard}
     />
   );
 };

@@ -109,7 +109,12 @@ export default class Turtle extends Thing {
       this.p.windowHeight / 2
     );
 
-    Matter.Composite.add(this.composite, Matter.Bodies.rectangle(x, y, 48, 50));
+    Matter.Composite.add(
+      this.composite,
+      Matter.Bodies.circle(x, y, 25, {
+        angle: this.p.randomGaussian(0, 1)
+      })
+    );
     this.setRotationInterval();
   }
 
@@ -117,9 +122,9 @@ export default class Turtle extends Thing {
     this.rotationInterval = window.setInterval(() => {
       Matter.Body.setAngularVelocity(
         this.composite.bodies[0],
-        this.p.randomGaussian(0, 0.1)
+        this.p.randomGaussian(0, 0.01)
       );
-    }, this.p.randomGaussian(5000, 1000));
+    }, this.p.randomGaussian(500, 100));
   };
 
   public setup = () => {};
@@ -143,10 +148,15 @@ export default class Turtle extends Thing {
     if (this.penMode.enable) {
       const p = this.virtualCanvas;
       p.push();
-      p.colorMode(this.p.HSB, 1000);
+      const interval = 5000;
+      p.colorMode(this.p.HSB, interval);
       p.stroke("white");
       if (this.penMode.rainbow) {
-        p.stroke((this.p.millis() - this.startMillis) % 1000, 500, 1000);
+        p.stroke(
+          (this.p.millis() - this.startMillis) % interval,
+          interval / 2,
+          interval
+        );
       }
       p.strokeWeight(5);
       p.line(this.penMode.lastX, this.penMode.lastY, x, y);
@@ -157,6 +167,17 @@ export default class Turtle extends Thing {
     }
   };
   public draw = () => {
+    const mouseover = Matter.Query.point([this.composite.bodies[0]], {
+      x: this.p.mouseX,
+      y: this.p.mouseY
+    });
+    if (
+      mouseover.length > 0 &&
+      this.p.mouseIsPressed &&
+      this.composite.bodies[0].position.y >= this.p.windowHeight / 2 - 50
+    ) {
+      this.onDragOut(this);
+    }
     // this.debugBounds();
     const F = Matter.Vector.rotate(
       Matter.Vector.create(0, -0.5),
@@ -168,15 +189,15 @@ export default class Turtle extends Thing {
     this.p.push();
     this.p.angleMode(this.p.RADIANS);
     this.p.translate(
-      this.composite.bodies[0].vertices[0].x,
-      this.composite.bodies[0].vertices[0].y
+      this.composite.bodies[0].position.x,
+      this.composite.bodies[0].position.y
     );
     this.p.rotate(this.composite.bodies[0].angle);
     if (this.rainbowMode) {
       this.p.colorMode(this.p.HSB, 1000);
       this.p.tint((this.p.millis() - this.startMillis) % 1000, 500, 1000);
     }
-    this.p.image(this.img, 0, 0);
+    this.p.image(this.img, -24, -20);
     this.p.pop();
     this.drawableChildren.forEach(child => {
       child.draw();
