@@ -1,6 +1,6 @@
 import * as React from "react";
 import reactable from "reactablejs";
-import { C, depth, shiftLeafX } from "./Data";
+import { C, depth, shiftLeafX, CardType } from "./Data";
 import interact from "interactjs";
 import CardIndex from "./calcifer/CardIndex";
 
@@ -38,9 +38,15 @@ const StaticCard: React.FC<any> = ({ cardData, dropping }: any) => {
         border: "1px solid black",
         alignItems: "center",
         cursor: "grab",
-        zIndex: 10
+        zIndex: 10,
+        position: "relative"
       }}
     >
+      <span
+        style={{ position: "absolute", top: 2, right: 5, fontWeight: "bold" }}
+      >
+        {cardData.type === CardType.ATTRIBUTE ? "A" : "T"}
+      </span>
       <Icon color={cardData.color} />
     </div>
   );

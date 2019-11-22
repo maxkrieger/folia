@@ -7,6 +7,10 @@ export interface ICoords {
   x: number;
   y: number;
 }
+export enum CardType {
+  THING,
+  ATTRIBUTE
+}
 export interface C {
   name: string;
   instanceid: string;
@@ -17,11 +21,13 @@ export interface C {
   isTemplate: boolean;
   angle: number;
   age: number;
+  type: CardType;
 }
 export const createCard = (
   name: string,
   x: number,
   y: number,
+  type: CardType,
   template = false
 ): C => ({
   name,
@@ -32,14 +38,16 @@ export const createCard = (
   coords: { x, y },
   isTemplate: template,
   angle: 0,
-  age: 0
+  age: 0,
+  type
 });
 
 export const thingToCard = (t: Thing) => {
   const card = createCard(
     t.name,
     t.composite.bodies[0].position.x,
-    t.composite.bodies[0].position.y
+    t.composite.bodies[0].position.y,
+    CardType.THING
   );
   if (t.child) {
     return insertLeaf(card, anyToCard(t.child));
@@ -48,7 +56,12 @@ export const thingToCard = (t: Thing) => {
 };
 
 export const anyToCard = (c: Card): C => {
-  const card = createCard(c.name, 0, 0);
+  const card = createCard(
+    c.name,
+    0,
+    0,
+    c instanceof Thing ? CardType.THING : CardType.ATTRIBUTE
+  );
   if (c.child) {
     return insertLeaf(card, anyToCard(c.child));
   }

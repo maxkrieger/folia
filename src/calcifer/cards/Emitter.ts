@@ -8,6 +8,7 @@ export default class Emitter extends Thing {
   public radius = 10;
   public count = 20;
   public maxage = 50000;
+  public rainbowMode = false;
   constructor(
     p: p5,
     world: Matter.World,
@@ -54,6 +55,9 @@ export default class Emitter extends Thing {
             ne.composite.bodies[0].angle
           );
           Matter.Body.setVelocity(ne.composite.bodies[0], F);
+        }
+        if (name === "rainbow") {
+          ne.rainbowMode = true;
         }
         if (payload instanceof Thing) {
           ne.emitInterval = window.setInterval(() => {
@@ -110,7 +114,17 @@ export default class Emitter extends Thing {
       return;
     }
     this.p.push();
+    const interval = 5000;
+    this.p.colorMode(this.p.HSB, interval);
     this.p.fill("white");
+    if (this.rainbowMode) {
+      this.p.fill(
+        (this.p.millis() - this.startMillis) % interval,
+        interval / 2,
+        interval
+      );
+    }
+
     this.p.circle(
       this.composite.bodies[0].position.x,
       this.composite.bodies[0].position.y,

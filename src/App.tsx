@@ -33,6 +33,7 @@ const allCards = (bottomY: number) =>
         (CARD_WIDTH + GUTTER_SIZE) * index +
         GUTTER_SIZE,
       bottomY,
+      CardIndex[name][2],
       true
     )
   );
@@ -94,7 +95,7 @@ const App: React.FC = () => {
               const newcards = c.isTemplate
                 ? [
                     ...setAllCoords(dy, dx, id, prevState.cards),
-                    createCard(c.name, c.coords.x, c.coords.y, true)
+                    createCard(c.name, c.coords.x, c.coords.y, c.type, true)
                   ]
                 : setAllCoords(dy, dx, id, prevState.cards);
               return {
