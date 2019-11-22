@@ -24,7 +24,10 @@ const allCards = (bottomY: number) =>
   Object.keys(CardIndex).map((name: string, index: number) =>
     createCard(
       name,
-      (CARD_WIDTH + GUTTER_SIZE) * index + GUTTER_SIZE,
+      window.innerWidth / 2 -
+        ((CARD_WIDTH + GUTTER_SIZE) * Object.keys(CardIndex).length) / 2 +
+        (CARD_WIDTH + GUTTER_SIZE) * index +
+        GUTTER_SIZE,
       bottomY,
       true
     )
