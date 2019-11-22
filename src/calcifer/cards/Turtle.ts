@@ -209,6 +209,7 @@ export default class Turtle extends Thing {
   };
   public cancel = () => {
     window.clearInterval(this.rotationInterval);
+    this.cancelled = true;
     Matter.World.remove(this.world, this.composite.bodies[0], true);
     if (this.child) {
       this.child.cancel();
