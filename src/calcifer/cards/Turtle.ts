@@ -48,6 +48,10 @@ export default class Turtle extends Thing {
             rainbow: payload.rainbow
           };
         }
+        if (name === "wavy") {
+          clearInterval(nb.rotationInterval);
+          Matter.Body.rotate(nb.composite.bodies[0], 0.05 * payload);
+        }
         if (name === "big") {
           //   Matter.Body.scale(
           //     nb.composite.bodies[0],
@@ -205,7 +209,7 @@ export default class Turtle extends Thing {
   };
   public cancel = () => {
     window.clearInterval(this.rotationInterval);
-    Matter.World.remove(this.world, this.composite.bodies[0]);
+    Matter.World.remove(this.world, this.composite.bodies[0], true);
     if (this.child) {
       this.child.cancel();
     }

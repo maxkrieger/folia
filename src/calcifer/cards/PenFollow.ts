@@ -3,6 +3,7 @@ import Card from "../CardClass";
 import p5 from "p5";
 
 export default class Pen extends AttributeCard {
+  public enableRainbow = false;
   constructor(
     p: p5,
     world: Matter.World,
@@ -18,10 +19,11 @@ export default class Pen extends AttributeCard {
     if (this.child) {
       this.child.getEffect((name, payload) => {
         if (name === "rainbow") {
+          this.enableRainbow = true;
           cb("pen", { rainbow: true });
         } else {
           cb(name, payload);
-          cb("pen", { rainbow: false });
+          cb("pen", { rainbow: this.enableRainbow });
         }
       });
     } else {

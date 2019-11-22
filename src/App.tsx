@@ -8,10 +8,12 @@ import {
   isUnrelated,
   dropDelete,
   findInAllByID,
-  createCard
+  createCard,
+  incrementAges
 } from "./Data";
 import Canvas from "./Canvas";
 import CardIndex from "./calcifer/CardIndex";
+import useInterval from "./useInterval";
 
 interface IState {
   cards: C[];
@@ -38,6 +40,10 @@ const App: React.FC = () => {
   const [state, setState] = useState<IState>({
     cards: allcards
   });
+
+  useInterval(() => {
+    setState({ ...state, cards: incrementAges(state.cards) });
+  }, 1000);
 
   return (
     <div style={{ width: "100%", height: "100%" }}>

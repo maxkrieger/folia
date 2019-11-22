@@ -8,12 +8,15 @@ import Pen from "./cards/PenFollow";
 import BrushIcon from "./icons/BrushIcon";
 import Emitter from "./cards/Emitter";
 import EmitterIcon from "./icons/EmitterIcon";
+import Wavy from "./cards/Wavy";
+import SineIcon from "./icons/SineIcon";
 
 const CardIndex = {
   turtle: [Turtle, TurtleIcon],
   ball: [Ball, Duck],
   emitter: [Emitter, EmitterIcon],
   rainbow: [Rainbow, RainbowIcon],
-  pen: [Pen, BrushIcon]
+  pen: [Pen, BrushIcon],
+  wavy: [Wavy, SineIcon]
 } as any;
 export default CardIndex;

@@ -16,6 +16,7 @@ export interface C {
   coords: ICoords;
   isTemplate: boolean;
   angle: number;
+  age: number;
 }
 export const createCard = (
   name: string,
@@ -30,7 +31,8 @@ export const createCard = (
   hasParent: false,
   coords: { x, y },
   isTemplate: template,
-  angle: 0
+  angle: 0,
+  age: 0
 });
 
 export const thingToCard = (t: Thing) => {
@@ -58,6 +60,7 @@ export const setCoords = (dy: number, dx: number, id: string, card: C): C =>
     ? {
         ...card,
         coords: { x: card.coords.x + dx, y: card.coords.y + dy },
+        age: 0,
         isTemplate: false,
         child: card.child
           ? setCoords(dy, dx, card.child.instanceid, card.child)
@@ -118,6 +121,7 @@ export const insertLeaf = (card: C, leaf: C): C =>
   card.child === undefined
     ? {
         ...card,
+        age: 0,
         child: shiftLeafX(
           leaf,
           card.coords.x + CARD_WIDTH + GUTTER_SIZE,
@@ -179,9 +183,17 @@ export const lift = (cards: C[], id: string): C[] => {
     .filter((card: C | undefined) => card !== undefined) as C[];
   return [
     ...removed,
-    { ...leaf, hasParent: false, angle: Math.random() * 16 - 8 }
+    { ...leaf, age: 0, hasParent: false, angle: Math.random() * 16 - 8 }
   ];
 };
+
+export const incrementAges = (cards: C[]) =>
+  cards
+    .map((card: C) => ({
+      ...card,
+      age: card.age + (card.isTemplate ? 0 : 1000)
+    }))
+    .filter((card: C) => card.isTemplate || card.age < 60000);
 
 export const depth = (card: C): number =>
   card.child ? depth(card.child) + 1 : 1;
