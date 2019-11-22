@@ -43,7 +43,13 @@ const StaticCard: React.FC<any> = ({ cardData, dropping }: any) => {
       }}
     >
       <span
-        style={{ position: "absolute", top: 2, right: 5, fontWeight: "bold" }}
+        style={{
+          userSelect: "none",
+          position: "absolute",
+          top: 2,
+          right: 5,
+          fontWeight: "bold"
+        }}
       >
         {cardData.type === CardType.ATTRIBUTE ? "A" : "T"}
       </span>
