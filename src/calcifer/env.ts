@@ -168,7 +168,7 @@ export default class Env {
     });
   };
   public getHeight = () => {
-    return this.p.windowHeight * (2 / 3);
+    return this.p.windowHeight * (3 / 5);
   };
   public draw = () => {
     // Matter.Engine.update(this.engine);

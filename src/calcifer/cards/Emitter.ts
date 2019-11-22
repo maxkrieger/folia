@@ -99,6 +99,7 @@ export default class Emitter extends Thing {
     }
     if (this.p.millis() - this.startMillis >= this.maxage) {
       this.cancel();
+      return;
     }
     this.p.push();
     this.p.fill("white");

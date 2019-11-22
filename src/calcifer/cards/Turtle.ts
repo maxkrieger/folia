@@ -170,6 +170,7 @@ export default class Turtle extends Thing {
   public draw = () => {
     if (this.p.millis() - this.startMillis >= this.maxage) {
       this.cancel();
+      return;
     }
     const mouseover = Matter.Query.point([this.composite.bodies[0]], {
       x: this.p.mouseX,

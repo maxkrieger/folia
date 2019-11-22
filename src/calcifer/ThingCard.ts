@@ -30,7 +30,7 @@ export default abstract class Thing extends Card {
     this.onDragOut = cb;
   };
   public getHeight = () => {
-    return this.p.windowHeight * (2 / 3);
+    return this.p.windowHeight * (3 / 5);
   };
 
   public composite: Matter.Composite;
