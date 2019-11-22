@@ -71,6 +71,7 @@ export default class Env {
     );
   };
 
+  public walls: Matter.Body[];
   public addThing = (thing: Thing) => {
     thing.Setup();
     thing.getEffect((name, payload) => {
@@ -105,7 +106,7 @@ export default class Env {
     this.startMillis = this.p.millis();
     this.mouseConstraint.mouse.pixelRatio = this.p.pixelDensity();
     Matter.World.add(this.engine.world, this.mouseConstraint);
-    const walls = [
+    this.walls = [
       Matter.Bodies.rectangle(
         0,
         this.p.windowHeight / 2 + 50,
@@ -120,7 +121,7 @@ export default class Env {
         isStatic: true
       }),
       Matter.Bodies.rectangle(
-        this.p.windowWidth - 50,
+        this.p.windowWidth - 20,
         0,
         50,
         this.p.windowHeight / 2,
@@ -129,12 +130,26 @@ export default class Env {
         }
       )
     ];
-
-    Matter.World.add(this.engine.world, walls);
+    Matter.World.add(this.engine.world, this.walls);
     Matter.Engine.run(this.engine);
   };
   public draw = () => {
     // Matter.Engine.update(this.engine);
+    const colls = this.walls.map((wall: any) =>
+      (Matter.Query as any).collides(
+        wall,
+        Matter.Composite.allBodies(this.engine.world)
+      )
+    );
+    const fl = colls.flat();
+    fl.forEach(({ bodyB, bodyA }: any) => {
+      if (!bodyB.isStatic) {
+        Matter.Body.rotate(bodyB, Math.PI);
+      }
+      if (!bodyA.isStatic) {
+        Matter.Body.rotate(bodyA, Math.PI);
+      }
+    });
     if (this.rainbowMode) {
       this.p.colorMode(this.p.HSB, 1000);
       this.p.background((this.p.millis() - this.startMillis) % 1000, 500, 400);
