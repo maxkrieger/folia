@@ -44,13 +44,17 @@ export default class Emitter extends Thing {
   public getEffect = (cb: (name: string, payload: any) => void) => {
     const ne = new Emitter(this.p, this.world, this.x, this.y, this.child);
     ne.Setup();
-    if (ne.child && ne.child.name === this.name) {
-      ne.child.getEffect(cb);
-      return;
-    }
     Matter.World.add(this.world, ne.composite);
     if (ne.child) {
       ne.child.getEffect((name: string, payload: any) => {
+        if (name === "wavy") {
+          Matter.Body.rotate(ne.composite.bodies[0], 0.05 * payload);
+          const F = Matter.Vector.rotate(
+            Matter.Vector.create(0, -0.5),
+            ne.composite.bodies[0].angle
+          );
+          Matter.Body.setVelocity(ne.composite.bodies[0], F);
+        }
         if (payload instanceof Thing) {
           ne.emitInterval = window.setInterval(() => {
             // if (ne.drawableChildren.length > 20) {
@@ -62,6 +66,10 @@ export default class Emitter extends Thing {
               ne.count--;
               const { x, y } = ne.composite.bodies[0].position;
               payload.getEffect((bname, b) => {
+                if (b.name === ne.name) {
+                  // prevent emitters-of-emitters
+                  return;
+                }
                 Matter.Body.setPosition(b.composite.bodies[0], { x, y });
                 const rot = this.p.randomGaussian(0, 1);
 

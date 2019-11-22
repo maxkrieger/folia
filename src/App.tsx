@@ -116,6 +116,12 @@ const App: React.FC = () => {
           height: CARD_HEIGHT + GUTTER_SIZE * 2
         }}
       />
+      <button
+        style={{ position: "absolute", bottom: 0, left: 0 }}
+        onClick={() => window.location.reload()}
+      >
+        reset
+      </button>
     </div>
   );
 };
