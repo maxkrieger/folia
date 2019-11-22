@@ -1,6 +1,6 @@
 import Turtle from "./cards/Turtle";
-import Ball from "./cards/Particle";
-import Duck from "./icons/Duck";
+// import Ball from "./cards/Particle";
+// import Duck from "./icons/Duck";
 import TurtleIcon from "./icons/TurtleIcon";
 import Rainbow from "./cards/Rainbow";
 import RainbowIcon from "./icons/RainbowIcon";
@@ -13,7 +13,7 @@ import SineIcon from "./icons/SineIcon";
 
 const CardIndex = {
   turtle: [Turtle, TurtleIcon],
-  ball: [Ball, Duck],
+  // ball: [Ball, Duck],
   emitter: [Emitter, EmitterIcon],
   rainbow: [Rainbow, RainbowIcon],
   pen: [Pen, BrushIcon],

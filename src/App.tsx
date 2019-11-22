@@ -15,6 +15,8 @@ import Canvas from "./Canvas";
 import CardIndex from "./calcifer/CardIndex";
 import useInterval from "./useInterval";
 
+export const CARD_PALETTE_OFFSET = 50;
+
 interface IState {
   cards: C[];
 }
@@ -36,7 +38,9 @@ const allCards = (bottomY: number) =>
   );
 
 const App: React.FC = () => {
-  const allcards = allCards(window.innerHeight - CARD_HEIGHT - GUTTER_SIZE);
+  const allcards = allCards(
+    window.innerHeight - CARD_HEIGHT - GUTTER_SIZE - CARD_PALETTE_OFFSET
+  );
   const [state, setState] = useState<IState>({
     cards: allcards
   });
@@ -46,7 +50,9 @@ const App: React.FC = () => {
   }, 1000);
 
   return (
-    <div style={{ width: "100%", height: "100%" }}>
+    <div
+      style={{ width: "100%", height: `calc(100%-${CARD_PALETTE_OFFSET}px)` }}
+    >
       <Canvas
         dropped={(id: string, cb: (card: C) => void) => {
           setState(prevState => {
@@ -102,7 +108,7 @@ const App: React.FC = () => {
       ))}
       <div
         style={{
-          bottom: 0,
+          bottom: CARD_PALETTE_OFFSET,
           position: "fixed",
           width: "100%",
           backgroundColor: "rgba(255,255,255,0.5)",
