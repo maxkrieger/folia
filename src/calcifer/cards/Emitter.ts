@@ -6,6 +6,7 @@ import Matter from "matter-js";
 export default class Emitter extends Thing {
   public emitInterval: number;
   public radius = 10;
+  public count = 20;
   constructor(
     p: p5,
     world: Matter.World,
@@ -47,29 +48,32 @@ export default class Emitter extends Thing {
     if (ne.child) {
       ne.child.getEffect((name: string, payload: any) => {
         if (payload instanceof Thing) {
-          this.emitInterval = window.setInterval(() => {
-            if (ne.drawableChildren.length > 20) {
-              ne.drawableChildren[0].cancel();
-              Matter.Composite.remove(ne.composite, ne.composite.composites[1]);
-              ne.drawableChildren.shift();
-            }
-            const { x, y } = ne.composite.bodies[0].position;
-            payload.getEffect((bname, b) => {
-              Matter.Body.setPosition(b.composite.bodies[0], { x, y });
-              const rot = this.p.randomGaussian(0, 1);
+          ne.emitInterval = window.setInterval(() => {
+            // if (ne.drawableChildren.length > 20) {
+            //   ne.drawableChildren[0].cancel();
+            //   Matter.Composite.remove(ne.composite, ne.composite.composites[1]);
+            //   ne.drawableChildren.shift();
+            // }
+            if (ne.count > 0) {
+              ne.count--;
+              const { x, y } = ne.composite.bodies[0].position;
+              payload.getEffect((bname, b) => {
+                Matter.Body.setPosition(b.composite.bodies[0], { x, y });
+                const rot = this.p.randomGaussian(0, 1);
 
-              Matter.Body.applyForce(
-                b.composite.bodies[0],
-                {
-                  x: b.composite.bodies[0].position.x,
-                  y: b.composite.bodies[0].position.y
-                },
-                Matter.Vector.rotate({ x: 0, y: -0.1 }, rot)
-              );
-              Matter.Body.rotate(b.composite.bodies[0], rot);
-              Matter.Composite.add(ne.composite, b.composite);
-              ne.drawableChildren.push(b);
-            });
+                Matter.Body.applyForce(
+                  b.composite.bodies[0],
+                  {
+                    x: b.composite.bodies[0].position.x,
+                    y: b.composite.bodies[0].position.y
+                  },
+                  Matter.Vector.rotate({ x: 0, y: -0.1 }, rot)
+                );
+                Matter.Body.rotate(b.composite.bodies[0], rot);
+                Matter.Composite.add(ne.composite, b.composite);
+                ne.drawableChildren.push(b);
+              });
+            }
           }, this.p.randomGaussian(900, 100));
         }
       });

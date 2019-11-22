@@ -120,7 +120,7 @@ export default class Env {
         isStatic: true
       }),
       Matter.Bodies.rectangle(
-        this.p.windowWidth - WALL_SIZE,
+        this.p.windowWidth,
         0,
         WALL_SIZE,
         this.getHeight(),

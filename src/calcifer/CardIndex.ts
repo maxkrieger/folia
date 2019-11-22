@@ -12,8 +12,8 @@ import EmitterIcon from "./icons/EmitterIcon";
 const CardIndex = {
   turtle: [Turtle, TurtleIcon],
   ball: [Ball, Duck],
+  emitter: [Emitter, EmitterIcon],
   rainbow: [Rainbow, RainbowIcon],
-  pen: [Pen, BrushIcon],
-  emitter: [Emitter, EmitterIcon]
+  pen: [Pen, BrushIcon]
 } as any;
 export default CardIndex;
