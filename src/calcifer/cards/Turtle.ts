@@ -102,7 +102,7 @@ export default class Turtle extends Thing {
     this.img = this.p.loadImage(turtle);
     this.virtualCanvas = this.p.createGraphics(
       this.p.windowWidth,
-      this.p.windowHeight / 2
+      this.getHeight()
     );
 
     Matter.Composite.add(
@@ -170,7 +170,7 @@ export default class Turtle extends Thing {
     if (
       mouseover.length > 0 &&
       this.p.mouseIsPressed &&
-      this.composite.bodies[0].position.y >= this.p.windowHeight / 2 - 50
+      this.composite.bodies[0].position.y >= this.getHeight() - 50
     ) {
       this.onDragOut(this);
     }

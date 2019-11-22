@@ -28,6 +28,7 @@ export default class Emitter extends Thing {
     );
   }
   public cancel = () => {
+    window.clearInterval(this.emitInterval);
     this.drawableChildren.forEach(child => {
       Matter.Composite.remove(child.world, child.composite.bodies[0]);
     });

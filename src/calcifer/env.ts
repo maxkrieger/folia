@@ -40,7 +40,7 @@ export default class Env {
     // this.p.preload = this.preload;
   }
   public windowResized = () => {
-    this.p.resizeCanvas(this.p.windowWidth, this.p.windowHeight / 2);
+    this.p.resizeCanvas(this.p.windowWidth, this.getHeight());
   };
   public onDrop = (card: C) => {
     const constructed = this.construct(card);
@@ -85,10 +85,7 @@ export default class Env {
     });
   };
   public Setup = () => {
-    this.canvas = this.p.createCanvas(
-      this.p.windowWidth,
-      this.p.windowHeight / 2
-    );
+    this.canvas = this.p.createCanvas(this.p.windowWidth, this.getHeight());
     this.mouse = Matter.Mouse.create(this.canvas.elt);
     const mouseParams = {
       mouse: this.mouse,
@@ -111,7 +108,7 @@ export default class Env {
     this.walls = [
       Matter.Bodies.rectangle(
         0,
-        this.p.windowHeight / 2 + WALL_SIZE,
+        this.getHeight() + WALL_SIZE,
         this.p.windowWidth,
         WALL_SIZE,
         { isStatic: true }
@@ -119,20 +116,14 @@ export default class Env {
       Matter.Bodies.rectangle(0, -WALL_SIZE, this.p.windowWidth, WALL_SIZE, {
         isStatic: true
       }),
-      Matter.Bodies.rectangle(
-        -WALL_SIZE,
-        0,
-        WALL_SIZE,
-        this.p.windowHeight / 2,
-        {
-          isStatic: true
-        }
-      ),
+      Matter.Bodies.rectangle(-WALL_SIZE, 0, WALL_SIZE, this.getHeight(), {
+        isStatic: true
+      }),
       Matter.Bodies.rectangle(
         this.p.windowWidth - WALL_SIZE,
         0,
         WALL_SIZE,
-        this.p.windowHeight / 2,
+        this.getHeight(),
         {
           isStatic: true
         }
@@ -147,37 +138,27 @@ export default class Env {
       if (!body.isStatic) {
         if (x < 0) {
           body.position.x = 0;
+          Matter.Body.rotate(body, Math.PI);
         } else if (x > this.p.windowWidth) {
           body.position.x = this.p.windowWidth - 50;
+          Matter.Body.rotate(body, Math.PI);
         } else if (y < 0) {
           body.position.y = 0;
+          Matter.Body.rotate(body, Math.PI);
         } else if (y > this.getHeight()) {
           body.position.y = this.getHeight() - 50;
+          Matter.Body.rotate(body, Math.PI);
         }
       }
     });
   };
   public getHeight = () => {
-    return this.p.windowHeight / 2;
+    return this.p.windowHeight * (2 / 3);
   };
   public draw = () => {
     // Matter.Engine.update(this.engine);
     this.things.forEach(this.watchdog);
-    const colls = this.walls.map((wall: any) =>
-      (Matter.Query as any).collides(
-        wall,
-        Matter.Composite.allBodies(this.engine.world)
-      )
-    );
-    const fl = colls.flat();
-    fl.forEach(({ bodyB, bodyA }: any) => {
-      if (!bodyB.isStatic) {
-        Matter.Body.rotate(bodyB, Math.PI);
-      }
-      if (!bodyA.isStatic) {
-        Matter.Body.rotate(bodyA, Math.PI);
-      }
-    });
+
     if (this.rainbowMode) {
       this.p.colorMode(this.p.HSB, 1000);
       this.p.background((this.p.millis() - this.startMillis) % 1000, 500, 400);
