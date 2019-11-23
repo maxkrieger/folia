@@ -9,6 +9,18 @@ export default class Emitter extends Thing {
   public count = 20;
   public maxage = 50000;
   public rainbowMode = false;
+  public penMode: {
+    enable: boolean;
+    rainbow: boolean;
+    lastX: number;
+    lastY: number;
+  } = {
+    enable: false,
+    rainbow: false,
+    lastX: -1,
+    lastY: -1
+  };
+  public virtualCanvas: p5.Graphics;
   constructor(
     p: p5,
     world: Matter.World,
@@ -29,6 +41,10 @@ export default class Emitter extends Thing {
         isSensor: true
       })
     );
+    this.virtualCanvas = this.p.createGraphics(
+      this.p.windowWidth,
+      this.getHeight()
+    );
   }
   public cancel = () => {
     this.cancelled = true;
@@ -42,6 +58,33 @@ export default class Emitter extends Thing {
     }
     this.drawableChildren = [];
     Matter.Composite.remove(this.world, this.composite.bodies[0]);
+  };
+  public handlePen = () => {
+    const { x, y } = this.composite.bodies[0].position;
+    if (this.penMode.lastX === -1) {
+      this.penMode.lastX = x;
+      this.penMode.lastY = y;
+    }
+    if (this.penMode.enable) {
+      const p = this.virtualCanvas;
+      p.push();
+      const interval = 5000;
+      p.colorMode(this.p.HSB, interval);
+      p.stroke("white");
+      if (this.penMode.rainbow) {
+        p.stroke(
+          (this.p.millis() - this.startMillis) % interval,
+          interval / 2,
+          interval
+        );
+      }
+      p.strokeWeight(5);
+      p.line(this.penMode.lastX, this.penMode.lastY, x, y);
+      this.penMode.lastX = x;
+      this.penMode.lastY = y;
+      p.pop();
+      this.p.image(p, 0, 0);
+    }
   };
   public getEffect = (cb: (name: string, payload: any) => void) => {
     const ne = new Emitter(this.p, this.world, this.x, this.y, this.child);
@@ -59,6 +102,13 @@ export default class Emitter extends Thing {
         }
         if (name === "rainbow") {
           ne.rainbowMode = true;
+        }
+        if (name === "pen") {
+          ne.penMode = {
+            ...ne.penMode,
+            enable: true,
+            rainbow: payload.rainbow
+          };
         }
         if (payload instanceof Thing) {
           ne.emitInterval = window.setInterval(() => {
@@ -99,6 +149,7 @@ export default class Emitter extends Thing {
     cb(this.name, ne);
   };
   public draw = () => {
+    this.handlePen();
     const mouseover = Matter.Query.point([this.composite.bodies[0]], {
       x: this.p.mouseX,
       y: this.p.mouseY
