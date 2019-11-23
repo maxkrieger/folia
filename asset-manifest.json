@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/folia/static/css/main.4c7dea7e.chunk.css",
-    "main.js": "/folia/static/js/main.a4cb3d5b.chunk.js",
-    "main.js.map": "/folia/static/js/main.a4cb3d5b.chunk.js.map",
+    "main.js": "/folia/static/js/main.a85b91c8.chunk.js",
+    "main.js.map": "/folia/static/js/main.a85b91c8.chunk.js.map",
     "runtime-main.js": "/folia/static/js/runtime-main.aa1fcc91.js",
     "runtime-main.js.map": "/folia/static/js/runtime-main.aa1fcc91.js.map",
     "static/js/2.a3e51039.chunk.js": "/folia/static/js/2.a3e51039.chunk.js",
     "static/js/2.a3e51039.chunk.js.map": "/folia/static/js/2.a3e51039.chunk.js.map",
     "index.html": "/folia/index.html",
-    "precache-manifest.a3a1769624f0c2331b2f48e194fae145.js": "/folia/precache-manifest.a3a1769624f0c2331b2f48e194fae145.js",
+    "precache-manifest.f03605fa9299e8955119b07cd60b1949.js": "/folia/precache-manifest.f03605fa9299e8955119b07cd60b1949.js",
     "service-worker.js": "/folia/service-worker.js",
     "static/css/main.4c7dea7e.chunk.css.map": "/folia/static/css/main.4c7dea7e.chunk.css.map",
     "static/media/turtle.svg": "/folia/static/media/turtle.c5498b74.svg"
@@ -17,6 +17,6 @@
     "static/js/runtime-main.aa1fcc91.js",
     "static/js/2.a3e51039.chunk.js",
     "static/css/main.4c7dea7e.chunk.css",
-    "static/js/main.a4cb3d5b.chunk.js"
+    "static/js/main.a85b91c8.chunk.js"
   ]
 }
